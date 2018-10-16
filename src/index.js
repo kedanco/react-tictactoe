@@ -16,7 +16,7 @@ class Board extends React.Component {
 		this.state = {
 			squares: Array(9).fill(null),
 			xIsNext: true,
-			isWin: false
+			status: ""
 		};
 	}
 
@@ -49,7 +49,8 @@ class Board extends React.Component {
 	}
 
 	restartGame() {
-		console.log("test");
+		this.setState({ squares: Array(9).fill(null), xIsNext: true });
+		document.getElementsByClassName("status").innerHTML = "";
 	}
 
 	render() {
