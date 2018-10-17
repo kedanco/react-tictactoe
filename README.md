@@ -8,11 +8,11 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 [x] Check for Winner (guided)
 [x] Player Actions Time Travel (guided)
 [x] Restart Button
-[ ] Bold the currently selected item in the move list
-[ ] Rewrite Board to use 2 loops to move the squares instead of hardcode
-[ ] Highlight the 3 winning squares
+[x] Bold the currently selected item in the move list
+[x] Rewrite Board to use 2 loops to move the squares instead of hardcode
+[x] When no one wins, display draw message
+[x] Highlight the 3 winning squares
 [ ] Victory Fanfare
-[ ] When no one wins, display draw message
 [ ] Improved Aesthetics
 [ ] Custom Player Icons
 [ ] Gameplay Animations
