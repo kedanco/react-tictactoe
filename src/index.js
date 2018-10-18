@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import fanfare from "./ff7-victory.mp3";
 import "./index.css";
+
+const canvasConfetti = document.querySelector("#canvas");
+const w = (canvasConfetti.width = window.innerWidth);
+const h = (canvasConfetti.height = window.innerHeight * 2);
 
 function Square(props) {
 	return (
@@ -58,6 +63,12 @@ class Game extends React.Component {
 			status: ""
 		};
 	}
+
+	audioPlayer = function(props) {
+		if (this.state.isWin) {
+			return <audio id="fanfare" src={fanfare} autoPlay loop />;
+		}
+	};
 
 	handleClick(i) {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -131,6 +142,26 @@ class Game extends React.Component {
 		}
 	}
 
+	renderStopMusic() {
+		if (this.state.isWin) {
+			return (
+				<div className="stopMusic">
+					<button className="stopButton" onClick={() => this.pausePlayMusic()}>
+						<span role="img" aria-label="sound">
+							🔊
+						</span>
+						Play/Pause
+					</button>
+				</div>
+			);
+		}
+	}
+
+	pausePlayMusic() {
+		let audio = document.getElementById("fanfare");
+		audio.paused ? audio.play() : audio.pause();
+	}
+
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
@@ -149,13 +180,16 @@ class Game extends React.Component {
 
 		return (
 			<div className="game">
+				<h2 className="title">TicTacToe!</h2>
 				<div className="game-board">
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
 				<div className="game-info">
 					<div>{this.state.status}</div>
+					{this.audioPlayer()}
 					<ol>{moves}</ol>
 					{this.renderRestart()}
+					{this.renderStopMusic()}
 				</div>
 			</div>
 		);
@@ -181,6 +215,8 @@ class Game extends React.Component {
 				squares[a] === squares[c]
 			) {
 				this.highlightWin(lines[i]);
+				confLoop();
+
 				this.setState({ isWin: true, status: "Winner: " + squares[a] });
 				return squares[a];
 			}
@@ -199,5 +235,72 @@ class Game extends React.Component {
 	}
 }
 // ========================================
+
+function confLoop() {
+	requestAnimationFrame(confLoop);
+	ctx.clearRect(0, 0, w, h);
+
+	confs.forEach(conf => {
+		conf.update();
+		conf.draw();
+	});
+}
+
+function Confetti() {
+	const colours = ["#fde123", "#009bde", "#ff6b00"];
+
+	this.x = Math.round(Math.random(10) * w);
+	this.y = Math.round(Math.random(10) * h) - h / 2;
+
+	this.rotation = Math.random(10) * 360;
+
+	const size = Math.random(10) * (w / 60);
+	this.size = size < 15 ? 15 : size;
+
+	this.color = colours[Math.round(Math.random(colours.length) * 10 - 1)];
+
+	this.speed = this.size / 7;
+
+	this.opacity = Math.random(10);
+
+	this.shiftDirection = Math.random(10) > 0.5 ? 1 : -1;
+}
+
+Confetti.prototype.border = function() {
+	if (this.y >= h) {
+		this.y = h;
+	}
+};
+
+Confetti.prototype.update = function() {
+	this.y += this.speed;
+
+	if (this.y <= h) {
+		this.x += this.shiftDirection / 5;
+		this.rotation += (this.shiftDirection * this.speed) / 100;
+	}
+
+	this.border();
+};
+
+Confetti.prototype.draw = function() {
+	ctx.beginPath();
+	ctx.arc(
+		this.x,
+		this.y,
+		this.size,
+		this.rotation,
+		this.rotation + Math.PI / 2
+	);
+	ctx.lineTo(this.x, this.y);
+	ctx.closePath();
+	ctx.globalAlpha = this.opacity;
+	ctx.fillStyle = this.color;
+	ctx.fill();
+};
+
+const ctx = canvasConfetti.getContext("2d");
+const confNum = Math.floor(w / 5);
+const confs = new Array(confNum).fill().map(_ => new Confetti());
 
 ReactDOM.render(<Game />, document.getElementById("root"));

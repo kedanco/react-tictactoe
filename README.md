@@ -12,9 +12,21 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Rewrite Board to use 2 loops to move the squares instead of hardcode
 - [x] When no one wins, display draw message
 - [x] Highlight the 3 winning squares
-- [ ] Victory Fanfare
+- [x] Victory Fanfare
 - [ ] Improved Aesthetics
 - [ ] Custom Player Icons
 - [ ] Gameplay Animations
 - [ ] Ranking Board
 - [ ] Load Player from Ranking Board
+
+### Instructions
+
+Download or clone project, then install
+
+`npm install`
+
+Start project with
+
+`npm start`
+
+And start playing at localhost:3000
