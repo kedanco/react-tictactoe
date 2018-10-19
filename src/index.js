@@ -7,6 +7,11 @@ const canvasConfetti = document.querySelector("#canvas");
 const w = (canvasConfetti.width = window.innerWidth);
 const h = (canvasConfetti.height = window.innerHeight * 2);
 
+const ctx = canvasConfetti.getContext("2d");
+const confNum = Math.floor(w / 5);
+let confs = new Array(confNum).fill().map(_ => new Confetti());
+let restart = false;
+
 function Square(props) {
 	return (
 		<button className="square" onClick={props.onClick}>
@@ -58,10 +63,26 @@ class Game extends React.Component {
 				}
 			],
 			stepNumber: 0,
-			xisNext: true,
+			xIsNext: true,
 			isWin: false,
-			status: ""
+			status: "Next player: X"
 		};
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (!prevState.isWin && this.state.isWin) {
+			if (confs.length === 0) {
+				confs = new Array(confNum).fill().map(_ => new Confetti());
+			}
+			confLoop();
+		}
+		if (restart === true) {
+			confs.splice(0, confs.length);
+			console.log(confs.length);
+			ctx.clearRect(0, 0, w, h);
+
+			restart = false;
+		}
 	}
 
 	audioPlayer = function(props) {
@@ -82,10 +103,10 @@ class Game extends React.Component {
 		this.setState({
 			history: history.concat([{ squares: squares }]),
 			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext
+			xIsNext: !this.state.xIsNext,
+			status: "Next player: " + (this.state.xIsNext ? "X" : "O")
 		});
 		winner = this.calculateWinner(squares);
-
 		if (!winner && this.state.history.length === 9) {
 			// Set Draw
 			this.setState({ status: "We have a draw!", isWin: true });
@@ -134,7 +155,13 @@ class Game extends React.Component {
 		if (this.state.isWin) {
 			return (
 				<div className="restart">
-					<button className="restartBtn" onClick={() => this.restartGame()}>
+					<button
+						className="restartBtn"
+						onClick={() => {
+							this.restartGame();
+							restart = true;
+						}}
+					>
 						Restart Game
 					</button>
 				</div>
@@ -150,7 +177,7 @@ class Game extends React.Component {
 						<span role="img" aria-label="sound">
 							🔊
 						</span>
-						Play/Pause
+						&nbsp; Play/Pause
 					</button>
 				</div>
 			);
@@ -170,7 +197,7 @@ class Game extends React.Component {
 		const moves = history.map((step, move) => {
 			const desc = move ? "Go to move #" + move : "Go to game start";
 			return (
-				<li key={move}>
+				<li className="move-list" key={move}>
 					<button className="move-item" onClick={() => this.jumpTo(move)}>
 						{desc}
 					</button>
@@ -186,11 +213,13 @@ class Game extends React.Component {
 				</div>
 				<div className="game-info">
 					<div>{this.state.status}</div>
-					{this.audioPlayer()}
+				</div>
+				<div className="buttonList">
 					<ol>{moves}</ol>
 					{this.renderRestart()}
 					{this.renderStopMusic()}
 				</div>
+				{this.audioPlayer()}
 			</div>
 		);
 	}
@@ -215,7 +244,6 @@ class Game extends React.Component {
 				squares[a] === squares[c]
 			) {
 				this.highlightWin(lines[i]);
-				confLoop();
 
 				this.setState({ isWin: true, status: "Winner: " + squares[a] });
 				return squares[a];
@@ -237,13 +265,18 @@ class Game extends React.Component {
 // ========================================
 
 function confLoop() {
-	requestAnimationFrame(confLoop);
-	ctx.clearRect(0, 0, w, h);
+	if (restart || confs.length === 0) {
+		return;
+	} else {
+		requestAnimationFrame(confLoop);
+		ctx.clearRect(0, 0, w, h);
 
-	confs.forEach(conf => {
-		conf.update();
-		conf.draw();
-	});
+		confs.forEach(conf => {
+			conf.update();
+			conf.draw();
+		});
+		console.log(confs.length);
+	}
 }
 
 function Confetti() {
@@ -269,6 +302,8 @@ function Confetti() {
 Confetti.prototype.border = function() {
 	if (this.y >= h) {
 		this.y = h;
+		// delete conf if reach bottom
+		confs.splice(confs.indexOf(this), 1);
 	}
 };
 
@@ -298,9 +333,5 @@ Confetti.prototype.draw = function() {
 	ctx.fillStyle = this.color;
 	ctx.fill();
 };
-
-const ctx = canvasConfetti.getContext("2d");
-const confNum = Math.floor(w / 5);
-const confs = new Array(confNum).fill().map(_ => new Confetti());
 
 ReactDOM.render(<Game />, document.getElementById("root"));

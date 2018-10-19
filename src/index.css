@@ -15,10 +15,18 @@ ul {
 }
 
 div#root {
-	height: 100vh;
+	height: 100%;
 	z-index: 9999;
 	margin: 0px auto;
 	padding: 20px;
+}
+
+.board-row {
+	display: grid;
+	grid-column: 1/1;
+	grid-row: 1/1;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
 }
 
 .board-row:after {
@@ -32,6 +40,7 @@ div#root {
 }
 
 .square {
+	display: grid;
 	background: #fff;
 	border: 1px solid #999;
 	font-size: 36px;
@@ -41,8 +50,8 @@ div#root {
 	margin-top: -1px;
 	padding: 10px;
 	text-align: center;
-	height: 140px;
-	width: 140px;
+	height: 2.5em;
+	width: 2.5em;
 	float: left;
 }
 
@@ -59,11 +68,11 @@ div#root {
 	width: 100%;
 	margin: 0px auto;
 	position: relative;
-	justify-items: center;
-	vertical-align: middle;
+	text-align: center;
 	display: grid;
 	grid-template-columns: 1fr 1.5fr 1fr;
 	grid-template-rows: 1fr 1.5fr 1fr;
+	grid-gap: 10px 10px;
 }
 
 h2.title {
@@ -80,17 +89,30 @@ h2.title {
 	display: grid;
 	grid-row: 2/3;
 	grid-column: 2/3;
-
+	margin: auto auto;
 	z-index: inherit;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 }
 
 .game-info {
+	display: grid;
+	grid-row: 1/2;
+	grid-column: 3/4;
 	z-index: inherit;
-	margin-left: 20px;
+	align-content: center;
+}
+
+.buttonList {
+	display: grid;
+	grid-row: 2/3;
+	grid-column: 1/2;
+}
+
+.move-item {
 }
 
 .restart {
-	margin-top: 20px;
 }
 
 .win {
