@@ -11,6 +11,7 @@ const ctx = canvasConfetti.getContext("2d");
 const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
 let restart = false;
+let winner = "";
 
 function Square(props) {
 	return (
@@ -69,11 +70,16 @@ class Game extends React.Component {
 		};
 	}
 
+	// shouldComponentUpdate() {}
+
 	componentDidUpdate(prevProps, prevState) {
-		if (!prevState.isWin && this.state.isWin) {
+		if (prevState.isWin !== this.state.isWin) {
 			if (confs.length === 0) {
 				confs = new Array(confNum).fill().map(_ => new Confetti());
 			}
+			this.setState({
+				status: "Winner is " + winner
+			});
 			confLoop();
 		}
 		if (restart === true) {
@@ -82,6 +88,11 @@ class Game extends React.Component {
 			ctx.clearRect(0, 0, w, h);
 
 			restart = false;
+		}
+		if (prevState.xIsNext !== this.state.xIsNext) {
+			this.setState({
+				status: "Next player: " + (this.state.xIsNext ? "X" : "O")
+			});
 		}
 	}
 
@@ -95,7 +106,7 @@ class Game extends React.Component {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
 		const squares = current.squares.slice();
-		let winner = this.calculateWinner(squares);
+		winner = this.calculateWinner(squares);
 		if (winner || squares[i]) {
 			return;
 		}
@@ -103,16 +114,20 @@ class Game extends React.Component {
 		this.setState({
 			history: history.concat([{ squares: squares }]),
 			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext,
-			status: "Next player: " + (this.state.xIsNext ? "X" : "O")
+			xIsNext: !this.state.xIsNext
 		});
 		winner = this.calculateWinner(squares);
+		if (winner) {
+			this.setState({ isWin: true, status: "Winner is " + winner });
+		}
 		if (!winner && this.state.history.length === 9) {
 			// Set Draw
 			this.setState({ status: "We have a draw!", isWin: true });
 		}
 
-		let moveButtons = Array.from(document.getElementsByClassName(`move-item`));
+		let moveButtons = Array.from(
+			document.getElementsByClassName(`move-button`)
+		);
 		this.setResetBold(moveButtons);
 	}
 
@@ -133,7 +148,9 @@ class Game extends React.Component {
 			xIsNext: step % 2 === 0
 		});
 
-		let moveButtons = Array.from(document.getElementsByClassName(`move-item`));
+		let moveButtons = Array.from(
+			document.getElementsByClassName(`move-button`)
+		);
 		this.setResetBold(moveButtons, step);
 	}
 
@@ -143,12 +160,26 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
-			status: "Next player: " + (this.state.xIsNext ? "X" : "O")
+			status: "Next player: X"
 		});
-		document.getElementsByClassName("status").innerHTML = "";
+
 		Array.from(document.getElementsByClassName("win")).forEach(box => {
 			box.classList.remove("win");
 		});
+	}
+
+	renderStatus() {
+		console.log(this.state.history.length);
+		if (winner === null && this.state.history.length === 10) {
+			let winStatus = "It's a draw!";
+			return <div className="winnerText">{winStatus}</div>;
+		}
+		if (this.state.isWin) {
+			let winStatus = "Winner is: " + winner;
+			return <div className="winnerText">{winStatus}</div>;
+		} else {
+			return this.state.status;
+		}
 	}
 
 	renderRestart() {
@@ -156,13 +187,16 @@ class Game extends React.Component {
 			return (
 				<div className="restart">
 					<button
-						className="restartBtn"
+						className="restartButton"
 						onClick={() => {
 							this.restartGame();
 							restart = true;
 						}}
 					>
-						Restart Game
+						<span role="img" aria-label="restart">
+							⟳
+						</span>
+						&nbsp; Restart Game
 					</button>
 				</div>
 			);
@@ -172,12 +206,17 @@ class Game extends React.Component {
 	renderStopMusic() {
 		if (this.state.isWin) {
 			return (
-				<div className="stopMusic">
-					<button className="stopButton" onClick={() => this.pausePlayMusic()}>
+				<div className="playPauseMusic">
+					<button
+						id="playPauseButton"
+						className="playPauseButton"
+						onClick={() => this.pausePlayMusic()}
+					>
 						<span role="img" aria-label="sound">
-							🔊
+							{" "}
+							🔊{" "}
 						</span>
-						&nbsp; Play/Pause
+						<span id="playPauseText">Playing</span>
 					</button>
 				</div>
 			);
@@ -186,7 +225,9 @@ class Game extends React.Component {
 
 	pausePlayMusic() {
 		let audio = document.getElementById("fanfare");
+		let audioText = document.getElementById("playPauseText");
 		audio.paused ? audio.play() : audio.pause();
+		audioText.innerHTML = audio.paused ? " Paused" : " Playing";
 	}
 
 	render() {
@@ -195,10 +236,10 @@ class Game extends React.Component {
 
 		// display past moves
 		const moves = history.map((step, move) => {
-			const desc = move ? "Go to move #" + move : "Go to game start";
+			const desc = move ? "Move #" + move : "Game Start";
 			return (
-				<li className="move-list" key={move}>
-					<button className="move-item" onClick={() => this.jumpTo(move)}>
+				<li className="move-item" key={move}>
+					<button className="move-button" onClick={() => this.jumpTo(move)}>
 						{desc}
 					</button>
 				</li>
@@ -212,12 +253,13 @@ class Game extends React.Component {
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
 				<div className="game-info">
-					<div>{this.state.status}</div>
-				</div>
-				<div className="buttonList">
-					<ol>{moves}</ol>
-					{this.renderRestart()}
+					{this.renderStatus()}
 					{this.renderStopMusic()}
+					{this.renderRestart()}
+				</div>
+				<div className="move-list">
+					<h3>Move List: Go To</h3>
+					<ul>{moves}</ul>
 				</div>
 				{this.audioPlayer()}
 			</div>
@@ -244,14 +286,10 @@ class Game extends React.Component {
 				squares[a] === squares[c]
 			) {
 				this.highlightWin(lines[i]);
-
-				this.setState({ isWin: true, status: "Winner: " + squares[a] });
 				return squares[a];
 			}
 		}
-		this.setState({
-			status: "Next player: " + (this.state.xIsNext ? "X" : "O")
-		});
+
 		return null;
 	}
 
@@ -266,6 +304,7 @@ class Game extends React.Component {
 
 function confLoop() {
 	if (restart || confs.length === 0) {
+		ctx.clearRect(0, 0, w, h);
 		return;
 	} else {
 		requestAnimationFrame(confLoop);
@@ -275,7 +314,7 @@ function confLoop() {
 			conf.update();
 			conf.draw();
 		});
-		console.log(confs.length);
+		// console.log(confs.length);
 	}
 }
 
