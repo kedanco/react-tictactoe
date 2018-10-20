@@ -2,12 +2,12 @@ html {
 	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
-	font-size: 12;
 	background-color: rgb(223, 220, 192);
 }
 
 body {
-	font: 14px "Century Gothic", Futura, sans-serif;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 14px;
 	margin: 20px;
 }
 
@@ -50,11 +50,17 @@ div#root {
 	height: 2.5em;
 	width: 2.5em;
 	float: left;
+
+	transition: box-shadow 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .square:focus,
 button:focus {
 	outline: none;
+}
+
+.square:hover:not(.win) {
+	box-shadow: inset 0px 0px 12px rgb(109, 142, 243);
 }
 
 .kbd-navigation .square:focus {
@@ -93,12 +99,18 @@ h2.title {
 
 .game-info {
 	display: grid;
+	grid-template-rows: 1fr 1fr 1fr;
 	grid-row: 3/4;
 	grid-column: 2/3;
 	z-index: inherit;
 	align-content: center;
 	padding: 20px;
 	/* max-height: 50px; */
+}
+
+.statusText {
+	font-size: 24px;
+	align-self: start;
 }
 
 .winnerText {
@@ -140,6 +152,14 @@ ul > li {
 	background-color: darkolivegreen;
 	color: white;
 	font-weight: 300;
+
+	transition: background-color 1s cubic-bezier(0.19, 1, 0.22, 1);
+	transition: color 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.move-button:hover {
+	background-color: greenyellow;
+	color: black;
 }
 
 li:first-of-type {

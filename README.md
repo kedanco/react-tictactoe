@@ -13,7 +13,7 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] When no one wins, display draw message
 - [x] Highlight the 3 winning squares
 - [x] Victory Fanfare
-- [ ] Improved Aesthetics
+- [x] Improved Aesthetics
 - [ ] Custom Player Icons
 - [ ] Gameplay Animations
 - [ ] Ranking Board

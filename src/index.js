@@ -178,7 +178,7 @@ class Game extends React.Component {
 			let winStatus = "Winner is: " + winner;
 			return <div className="winnerText">{winStatus}</div>;
 		} else {
-			return this.state.status;
+			return <div className="statusText">{this.state.status}</div>;
 		}
 	}
 
@@ -248,7 +248,7 @@ class Game extends React.Component {
 
 		return (
 			<div className="game">
-				<h2 className="title">TicTacToe!</h2>
+				<h2 className="title">Kedanco's TicTacToe!</h2>
 				<div className="game-board">
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
@@ -258,7 +258,7 @@ class Game extends React.Component {
 					{this.renderRestart()}
 				</div>
 				<div className="move-list">
-					<h3>Move List: Go To</h3>
+					<h3>Go To Move:</h3>
 					<ul>{moves}</ul>
 				</div>
 				{this.audioPlayer()}
