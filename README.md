@@ -14,7 +14,9 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Highlight the 3 winning squares
 - [x] Victory Fanfare
 - [x] Improved Aesthetics
-- [ ] Custom Player Icons
+- [x] Custom Player Icons
+- [ ] Only allow Icon changing before game/for next game
+- [ ] Setup Settings pop-up
 - [ ] Gameplay Animations
 - [ ] Ranking Board
 - [ ] Load Player from Ranking Board

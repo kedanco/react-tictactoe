@@ -12,6 +12,7 @@ const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
 let restart = false;
 let winner = "";
+// let [player1, player2] = ["X", "O"];
 
 function Square(props) {
 	return (
@@ -19,6 +20,16 @@ function Square(props) {
 			{props.value}
 		</button>
 	);
+}
+
+class IconSelect extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			player1: "X",
+			player2: "O"
+		};
+	}
 }
 
 class Board extends React.Component {
@@ -66,8 +77,12 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
-			status: "Next player: X"
+			status: "Next player: X",
+			player1: "X",
+			player2: "O"
 		};
+
+		this.handleFormChange = this.handleFormChange.bind(this);
 	}
 
 	// shouldComponentUpdate() {}
@@ -91,7 +106,9 @@ class Game extends React.Component {
 		}
 		if (prevState.xIsNext !== this.state.xIsNext) {
 			this.setState({
-				status: "Next player: " + (this.state.xIsNext ? "X" : "O")
+				status:
+					"Next player: " +
+					(this.state.xIsNext ? this.state.player1 : this.state.player2)
 			});
 		}
 	}
@@ -110,7 +127,7 @@ class Game extends React.Component {
 		if (winner || squares[i]) {
 			return;
 		}
-		squares[i] = this.state.xIsNext ? "X" : "O";
+		squares[i] = this.state.xIsNext ? this.state.player1 : this.state.player2;
 		this.setState({
 			history: history.concat([{ squares: squares }]),
 			stepNumber: history.length,
@@ -169,7 +186,6 @@ class Game extends React.Component {
 	}
 
 	renderStatus() {
-		console.log(this.state.history.length);
 		if (winner === null && this.state.history.length === 10) {
 			let winStatus = "It's a draw!";
 			return <div className="winnerText">{winStatus}</div>;
@@ -223,6 +239,55 @@ class Game extends React.Component {
 		}
 	}
 
+	handleFormChange(player, event) {
+		console.log(player);
+		const target = event.target;
+		if (player === 1) {
+			this.setState({ player1: target.value });
+		} else {
+			this.setState({ player2: target.value });
+		}
+	}
+
+	renderIcons() {
+		return (
+			<form>
+				<div className="icons">
+					<div className="player1-icons">
+						<label>
+							Player 1:{" "}
+							<select
+								id="p1Select"
+								value={this.state.player1}
+								onChange={e => this.handleFormChange(1, e)}
+							>
+								<option value="X">X</option>
+								<option value="A">A</option>
+								<option value="B">B</option>
+								<option value="C">C</option>
+							</select>
+						</label>
+					</div>
+					<div className="player2-icons">
+						<label>
+							Player 2:{" "}
+							<select
+								id="p2Select"
+								value={this.state.player2}
+								onChange={e => this.handleFormChange(2, e)}
+							>
+								<option value="O">O</option>
+								<option value="M">M</option>
+								<option value="F">F</option>
+								<option value="G">G</option>
+							</select>
+						</label>
+					</div>
+				</div>
+			</form>
+		);
+	}
+
 	pausePlayMusic() {
 		let audio = document.getElementById("fanfare");
 		let audioText = document.getElementById("playPauseText");
@@ -249,6 +314,7 @@ class Game extends React.Component {
 		return (
 			<div className="game">
 				<h2 className="title">Kedanco's TicTacToe!</h2>
+				{this.renderIcons()}
 				<div className="game-board">
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
