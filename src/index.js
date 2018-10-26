@@ -7,6 +7,33 @@ const canvasConfetti = document.querySelector("#canvas");
 const w = (canvasConfetti.width = window.innerWidth);
 const h = (canvasConfetti.height = window.innerHeight * 2);
 
+const iconsArray = [
+	"X",
+	"💩",
+	"🍦",
+	"🐞",
+	"♨",
+	"☆",
+	"⚽",
+	"♠",
+	"♡",
+	"♤",
+	"♦",
+	"♫",
+	"O",
+	"🚽",
+	"🍫",
+	"🕷️",
+	"☕",
+	"★",
+	"⚾",
+	"♢",
+	"♣",
+	"♥",
+	"♧",
+	"♭"
+];
+
 const ctx = canvasConfetti.getContext("2d");
 const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
@@ -20,16 +47,6 @@ function Square(props) {
 		</button>
 	);
 }
-
-// class IconSelect extends React.Component {
-// 	constructor(props) {
-// 		super(props);
-// 		this.state = {
-// 			player1: "X",
-// 			player2: "O"
-// 		};
-// 	}
-// }
 
 class Board extends React.Component {
 	renderSquare(i) {
@@ -77,6 +94,7 @@ class Game extends React.Component {
 			xIsNext: true,
 			isWin: false,
 			gameStart: false,
+			iconClash: false,
 			status: "Next player: X",
 			player1: "X",
 			player2: "O"
@@ -89,6 +107,7 @@ class Game extends React.Component {
 
 	componentDidMount() {
 		this.iconLabel = document.getElementsByClassName("icons-text")[0];
+		this.iconWarning = document.getElementsByClassName("icons-warning")[0];
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -101,6 +120,7 @@ class Game extends React.Component {
 			});
 			confLoop();
 		}
+
 		if (restart === true) {
 			confs.splice(0, confs.length);
 			console.log(confs.length);
@@ -108,6 +128,7 @@ class Game extends React.Component {
 
 			restart = false;
 		}
+
 		if (prevState.xIsNext !== this.state.xIsNext) {
 			this.setState({
 				status:
@@ -115,10 +136,18 @@ class Game extends React.Component {
 					(this.state.xIsNext ? this.state.player1 : this.state.player2)
 			});
 		}
+
 		if (this.state.gameStart) {
 			this.iconLabel.innerHTML = "Icons locked";
 		} else {
 			this.iconLabel.innerHTML = "Select your icons before game start";
+		}
+
+		if (this.state.iconClash) {
+			this.iconWarning.innerHTML =
+				"This icon has been chosen by another player.";
+		} else {
+			this.iconWarning.innerHTML = "";
 		}
 	}
 
@@ -191,6 +220,7 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
+			iconClash: false,
 			gameStart: false,
 			status: "Next player: " + this.state.player1
 		});
@@ -258,65 +288,68 @@ class Game extends React.Component {
 		if (!this.state.gameStart) {
 			console.log(player);
 			const target = event.target;
+
 			if (player === 1) {
-				this.setState({ player1: target.value });
+				if (target.value !== this.state.player2) {
+					this.setState({ player1: target.value });
+					this.setState({ iconClash: false });
+				} else {
+					this.setState({ iconClash: true });
+				}
 			} else {
-				this.setState({ player2: target.value });
+				//player2
+				if (target.value !== this.state.player1) {
+					this.setState({ player2: target.value });
+					this.setState({ iconClash: false });
+				} else {
+					this.setState({ iconClash: true });
+				}
 			}
 		}
 	}
 
 	renderIcons() {
+		const listOptions = opt => {
+			return (
+				<option key={opt} value={opt}>
+					{opt}
+				</option>
+			);
+		};
+
 		return (
 			<form>
 				<div className="icons">
 					<p className="icons-text">Select your icons before game start</p>
 					<div className="player1-icons">
 						<label>
-							Player 1:{" "}
+							<span>Player 1: </span>
 							<select
-								id="p1Select"
+								id="select1"
 								value={this.state.player1}
-								onChange={e => this.handleFormChange(1, e)}
+								onChange={e => {
+									this.handleFormChange(1, e);
+								}}
 							>
-								<option value="X">X</option>
-								<option value="💩">💩</option>
-								<option value="🍦">🍦</option>
-								<option value="🐞">🐞</option>
-								<option value="♨">♨</option>
-								<option value="☆">☆</option>
-								<option value="⚽">⚽</option>
-								<option value="♠">♠</option>
-								<option value="♡">♡</option>
-								<option value="♤">♤</option>
-								<option value="♦">♦</option>
-								<option value="♫">♫</option>
+								{iconsArray.map(listOptions)}
 							</select>
 						</label>
 					</div>
 					<div className="player2-icons">
 						<label>
-							Player 2:{" "}
+							<span>Player 2: </span>
 							<select
-								id="p2Select"
+								id="select2"
 								value={this.state.player2}
-								onChange={e => this.handleFormChange(2, e)}
+								onChange={e => {
+									this.handleFormChange(2, e);
+								}}
 							>
-								<option value="O">O</option>
-								<option value="🚽">🚽</option>
-								<option value="🍫">🍫</option>
-								<option value="🕷️">🕷️</option>
-								<option value="☕">☕</option>
-								<option value="★">★</option>
-								<option value="⚾">⚾</option>
-								<option value="♢">♢</option>
-								<option value="♣">♣</option>
-								<option value="♥">♥</option>
-								<option value="♧">♧</option>
-								<option value="♭">♭</option>
+								{iconsArray.map(listOptions)}
 							</select>
 						</label>
 					</div>
+					<p className="icons-warning" />
 				</div>
 			</form>
 		);

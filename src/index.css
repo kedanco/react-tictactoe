@@ -32,6 +32,10 @@ div#root {
 	display: table;
 }
 
+.icons-warning {
+	color: red;
+}
+
 .status {
 	margin-bottom: 10px;
 }
