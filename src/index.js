@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import fanfare from "./ff7-victory.mp3";
+import draw from "./draw.mp3";
 import "./index.css";
 
 const canvasConfetti = document.querySelector("#canvas");
@@ -93,6 +94,7 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
+			isDraw: false,
 			gameStart: false,
 			iconClash: false,
 			status: "Next player: X",
@@ -119,6 +121,9 @@ class Game extends React.Component {
 				status: "Winner is " + winner
 			});
 			confLoop();
+		}
+
+		if (this.state.isDraw) {
 		}
 
 		if (restart === true) {
@@ -154,6 +159,8 @@ class Game extends React.Component {
 	audioPlayer = function(props) {
 		if (this.state.isWin) {
 			return <audio id="fanfare" src={fanfare} autoPlay loop />;
+		} else if (this.state.isDraw) {
+			return <audio id="fanfare" src={draw} autoPlay />;
 		}
 	};
 
@@ -182,7 +189,7 @@ class Game extends React.Component {
 		}
 		if (!winner && this.state.history.length === 9) {
 			// Set Draw
-			this.setState({ status: "We have a draw!", isWin: true });
+			this.setState({ status: "We have a draw!", isDraw: true });
 		}
 
 		let moveButtons = Array.from(
@@ -220,6 +227,7 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
+			isDraw: false,
 			iconClash: false,
 			gameStart: false,
 			status: "Next player: " + this.state.player1
@@ -244,7 +252,7 @@ class Game extends React.Component {
 	}
 
 	renderRestart() {
-		if (this.state.isWin) {
+		if (this.state.isWin || this.state.isDraw) {
 			return (
 				<div className="restart">
 					<button
@@ -265,7 +273,7 @@ class Game extends React.Component {
 	}
 
 	renderStopMusic() {
-		if (this.state.isWin) {
+		if (this.state.isWin || this.state.isDraw) {
 			return (
 				<div className="playPauseMusic">
 					<button
