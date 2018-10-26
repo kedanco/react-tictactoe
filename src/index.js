@@ -12,7 +12,6 @@ const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
 let restart = false;
 let winner = "";
-// let [player1, player2] = ["X", "O"];
 
 function Square(props) {
 	return (
@@ -22,15 +21,15 @@ function Square(props) {
 	);
 }
 
-class IconSelect extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			player1: "X",
-			player2: "O"
-		};
-	}
-}
+// class IconSelect extends React.Component {
+// 	constructor(props) {
+// 		super(props);
+// 		this.state = {
+// 			player1: "X",
+// 			player2: "O"
+// 		};
+// 	}
+// }
 
 class Board extends React.Component {
 	renderSquare(i) {
@@ -77,6 +76,7 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
+			gameStart: false,
 			status: "Next player: X",
 			player1: "X",
 			player2: "O"
@@ -86,6 +86,10 @@ class Game extends React.Component {
 	}
 
 	// shouldComponentUpdate() {}
+
+	componentDidMount() {
+		this.iconLabel = document.getElementsByClassName("icons-text")[0];
+	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if (prevState.isWin !== this.state.isWin) {
@@ -111,6 +115,11 @@ class Game extends React.Component {
 					(this.state.xIsNext ? this.state.player1 : this.state.player2)
 			});
 		}
+		if (this.state.gameStart) {
+			this.iconLabel.innerHTML = "Icons locked";
+		} else {
+			this.iconLabel.innerHTML = "Select your icons before game start";
+		}
 	}
 
 	audioPlayer = function(props) {
@@ -123,6 +132,11 @@ class Game extends React.Component {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
 		const squares = current.squares.slice();
+
+		if (!this.state.gameStart) {
+			this.setState({ gameStart: !this.state.gameStart });
+		}
+
 		winner = this.calculateWinner(squares);
 		if (winner || squares[i]) {
 			return;
@@ -177,7 +191,8 @@ class Game extends React.Component {
 			stepNumber: 0,
 			xIsNext: true,
 			isWin: false,
-			status: "Next player: X"
+			gameStart: false,
+			status: "Next player: " + this.state.player1
 		});
 
 		Array.from(document.getElementsByClassName("win")).forEach(box => {
@@ -240,12 +255,14 @@ class Game extends React.Component {
 	}
 
 	handleFormChange(player, event) {
-		console.log(player);
-		const target = event.target;
-		if (player === 1) {
-			this.setState({ player1: target.value });
-		} else {
-			this.setState({ player2: target.value });
+		if (!this.state.gameStart) {
+			console.log(player);
+			const target = event.target;
+			if (player === 1) {
+				this.setState({ player1: target.value });
+			} else {
+				this.setState({ player2: target.value });
+			}
 		}
 	}
 
@@ -253,6 +270,7 @@ class Game extends React.Component {
 		return (
 			<form>
 				<div className="icons">
+					<p className="icons-text">Select your icons before game start</p>
 					<div className="player1-icons">
 						<label>
 							Player 1:{" "}
@@ -262,9 +280,17 @@ class Game extends React.Component {
 								onChange={e => this.handleFormChange(1, e)}
 							>
 								<option value="X">X</option>
-								<option value="A">A</option>
-								<option value="B">B</option>
-								<option value="C">C</option>
+								<option value="💩">💩</option>
+								<option value="🍦">🍦</option>
+								<option value="🐞">🐞</option>
+								<option value="♨">♨</option>
+								<option value="☆">☆</option>
+								<option value="⚽">⚽</option>
+								<option value="♠">♠</option>
+								<option value="♡">♡</option>
+								<option value="♤">♤</option>
+								<option value="♦">♦</option>
+								<option value="♫">♫</option>
 							</select>
 						</label>
 					</div>
@@ -277,9 +303,17 @@ class Game extends React.Component {
 								onChange={e => this.handleFormChange(2, e)}
 							>
 								<option value="O">O</option>
-								<option value="M">M</option>
-								<option value="F">F</option>
-								<option value="G">G</option>
+								<option value="🚽">🚽</option>
+								<option value="🍫">🍫</option>
+								<option value="🕷️">🕷️</option>
+								<option value="☕">☕</option>
+								<option value="★">★</option>
+								<option value="⚾">⚾</option>
+								<option value="♢">♢</option>
+								<option value="♣">♣</option>
+								<option value="♥">♥</option>
+								<option value="♧">♧</option>
+								<option value="♭">♭</option>
 							</select>
 						</label>
 					</div>

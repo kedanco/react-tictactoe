@@ -15,7 +15,10 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Victory Fanfare
 - [x] Improved Aesthetics
 - [x] Custom Player Icons
-- [ ] Only allow Icon changing before game/for next game
+- [x] Only allow Icon changing before game
+- [x] Add Special Icons to the list
+- [ ] Load icons from 1 list, check for duplication before game start
+- [ ] Disable Confetti, Alternative music when Draw
 - [ ] Setup Settings pop-up
 - [ ] Gameplay Animations
 - [ ] Ranking Board
