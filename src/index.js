@@ -143,7 +143,7 @@ class Game extends React.Component {
 		}
 
 		if (this.state.gameStart) {
-			this.iconLabel.innerHTML = "Icons locked";
+			this.iconLabel.innerHTML = "<strong>Icons locked</strong>";
 		} else {
 			this.iconLabel.innerHTML = "Select your icons before game start";
 		}
@@ -393,14 +393,29 @@ class Game extends React.Component {
 				<div className="game-board">
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
+				<div className="move-list">
+					<h3>Go To Move:</h3>
+					<ul>{moves}</ul>
+				</div>
 				<div className="game-info">
 					{this.renderStatus()}
 					{this.renderStopMusic()}
 					{this.renderRestart()}
 				</div>
-				<div className="move-list">
-					<h3>Go To Move:</h3>
-					<ul>{moves}</ul>
+				<div className="credits">
+					<p>
+						Music Credits:&nbsp;
+						<a href="https://www.youtube.com/watch?v=-YCN-a0NsNk">
+							Final Fantasy 7 Fanfare
+						</a>
+						<br />
+						<a href="https://www.youtube.com/watch?v=-CSQglagWmY">
+							Mario Party 4 Draw Music
+						</a>
+					</p>
+					<p>
+						<a href="www.kedanco.com">Kedanco</a>
+					</p>
 				</div>
 				{this.audioPlayer()}
 			</div>
