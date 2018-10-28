@@ -20,14 +20,16 @@ div#root {
 
 .icons,
 .game-info,
-.credits {
+.credits,
+.leaderboard {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
 .credits {
 	display: grid;
-	grid-column: 2/3;
-	grid-row: 4/5;
+	grid-column: 1/2;
+	grid-row: 3/4;
+	align-self: center;
 }
 
 a {
@@ -107,8 +109,8 @@ button:focus {
 	text-align: center;
 	display: grid;
 	grid-template-columns: 1fr 1.5fr 1fr;
-	grid-template-rows: 1fr 2.5fr 1.5fr 0.5fr;
-	grid-gap: 10px 10px;
+	grid-template-rows: 1fr 2.5fr 1.5fr;
+	grid-gap: 10px 50px;
 }
 
 h2.title {
@@ -119,6 +121,94 @@ h2.title {
 	grid-row: 1/2;
 	grid-column: 2/3;
 	width: 100%;
+}
+
+.leaderboard-container {
+	display: grid;
+	grid-row: 1/5;
+	grid-column: 3/4;
+}
+
+.leaderboard {
+	display: grid;
+	grid-template-areas:
+		"title title title"
+		"number username wins"
+		"board board board";
+	grid-template-rows: 0.5fr 0.5fr 10fr;
+	grid-template-columns: 1.2fr 4fr 1fr;
+	border: 1px solid #555;
+}
+
+/* .leaderboard > div,
+.leaderboard > span {
+	border: 1px solid #555;
+} */
+
+.leaderboard * {
+	display: grid;
+	padding: 5px 2px;
+	text-align: center;
+}
+
+.l-title {
+	font-size: 22px;
+	grid-area: title;
+	background-color: green;
+}
+
+.l-number,
+.l-username,
+.l-wins {
+	font-weight: bold;
+	align-content: center;
+	border: 1px solid #555;
+}
+
+.l-number {
+	grid-area: number;
+	border-left: none;
+	border-right: none;
+}
+.l-username {
+	grid-area: username;
+}
+.l-wins {
+	grid-area: wins;
+	border-left: none;
+	border-right: none;
+}
+
+.l-board {
+	grid-area: board;
+	grid-template-rows: repeat(auto-fill, 40px);
+	padding: 0px 0px;
+	align-content: start;
+}
+
+.l-row {
+	padding: 0px;
+	grid-column: 1/4;
+	border-bottom: 1px solid black;
+	grid-template-columns: 1.2fr 4fr 1fr;
+}
+
+.r-number,
+.r-username,
+.r-wins {
+	align-content: center;
+}
+
+.r-number {
+	grid-column: 1/2;
+}
+.r-username {
+	grid-column: 2/3;
+	border-left: 1px solid #444;
+	border-right: 1px solid #444;
+}
+.r-wins {
+	grid-column: 3/4;
 }
 
 .game-board {

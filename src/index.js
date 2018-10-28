@@ -35,6 +35,16 @@ const iconsArray = [
 	"♭"
 ];
 
+// TODO
+// Load rankingList from localStorage
+
+let rankingList = [
+	{ username: "kelvin", wins: 10 },
+	{ username: "adam", wins: 6 },
+	{ username: "johnny", wins: 3 }
+];
+localStorage.setItem("ranking", JSON.stringify(rankingList));
+
 const ctx = canvasConfetti.getContext("2d");
 const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
@@ -99,7 +109,9 @@ class Game extends React.Component {
 			iconClash: false,
 			status: "Next player: X",
 			player1: "X",
-			player2: "O"
+			player2: "O",
+			user1: "Player1",
+			user2: "Player2"
 		};
 
 		this.handleFormChange = this.handleFormChange.bind(this);
@@ -120,16 +132,19 @@ class Game extends React.Component {
 			this.setState({
 				status: "Winner is " + winner
 			});
+			this.addScore();
 			confLoop();
-		}
-
-		if (this.state.isDraw) {
 		}
 
 		if (restart === true) {
 			confs.splice(0, confs.length);
 			console.log(confs.length);
 			ctx.clearRect(0, 0, w, h);
+			this.setState({
+				status:
+					"Next player: " +
+					(this.state.xIsNext ? this.state.player1 : this.state.player2)
+			});
 
 			restart = false;
 		}
@@ -154,6 +169,14 @@ class Game extends React.Component {
 		} else {
 			this.iconWarning.innerHTML = "";
 		}
+	}
+
+	addScore() {
+		// TODO
+		// Get winning user
+		// Check if exist, +1 to wins
+		// Else add new user
+		// Re-order rankingList, re-render
 	}
 
 	audioPlayer = function(props) {
@@ -299,16 +322,18 @@ class Game extends React.Component {
 
 			if (player === 1) {
 				if (target.value !== this.state.player2) {
-					this.setState({ player1: target.value });
-					this.setState({ iconClash: false });
+					this.setState({
+						player1: target.value,
+						iconClash: false,
+						status: "Next player: " + target.value
+					});
 				} else {
 					this.setState({ iconClash: true });
 				}
 			} else {
 				//player2
 				if (target.value !== this.state.player1) {
-					this.setState({ player2: target.value });
-					this.setState({ iconClash: false });
+					this.setState({ player2: target.value, iconClash: false });
 				} else {
 					this.setState({ iconClash: true });
 				}
@@ -331,7 +356,7 @@ class Game extends React.Component {
 					<p className="icons-text">Select your icons before game start</p>
 					<div className="player1-icons">
 						<label>
-							<span>Player 1: </span>
+							<span>{this.state.user1}: </span>
 							<select
 								id="select1"
 								value={this.state.player1}
@@ -345,7 +370,7 @@ class Game extends React.Component {
 					</div>
 					<div className="player2-icons">
 						<label>
-							<span>Player 2: </span>
+							<span>{this.state.user2}: </span>
 							<select
 								id="select2"
 								value={this.state.player2}
@@ -360,6 +385,32 @@ class Game extends React.Component {
 					<p className="icons-warning" />
 				</div>
 			</form>
+		);
+	}
+
+	renderRanking() {
+		let rows = [];
+		let displayRanking = function() {
+			rankingList.forEach((user, index) => {
+				rows.push(
+					<div className="l-row" key={index}>
+						<div className="r-number">{index + 1}</div>
+						<div className="r-username">{user.username}</div>
+						<div className="r-wins">{user.wins}</div>
+					</div>
+				);
+			});
+			return rows;
+		};
+
+		return (
+			<div className="leaderboard">
+				<span className="l-title">Leaderboard:</span> <br />
+				<div className="l-number">Ranking</div>
+				<div className="l-username">Username</div>
+				<div className="l-wins">Wins</div>
+				<div className="l-board">{displayRanking()}</div>
+			</div>
 		);
 	}
 
@@ -397,6 +448,7 @@ class Game extends React.Component {
 					<h3>Go To Move:</h3>
 					<ul>{moves}</ul>
 				</div>
+				<div className="leaderboard-container">{this.renderRanking()}</div>
 				<div className="game-info">
 					{this.renderStatus()}
 					{this.renderStopMusic()}
@@ -411,6 +463,12 @@ class Game extends React.Component {
 						<br />
 						<a href="https://www.youtube.com/watch?v=-CSQglagWmY">
 							Mario Party 4 Draw Music
+						</a>
+					</p>
+					<p>
+						Confetti Background:&nbsp;
+						<a href="https://codemyui.com/confetti-falling-background-using-canvas/">
+							CodemyUI
 						</a>
 					</p>
 					<p>
