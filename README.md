@@ -19,8 +19,9 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Add Special Icons to the list
 - [x] Load icons from 1 list, check for duplication before game start
 - [x] Disable Confetti, Alternative music when Draw
-- [ ] Setup LocalStorage for Ranking Board
-- [ ] Load and Save Player from Ranking Board
+- [x] Setup localStorage for Ranking Board
+- [x] Save Player name to Ranking Board
+- [x] Reset localStorage Ranking Board records
 - [ ] Add Default button for player icons
 - [ ] Refactor Code into Components
 - [ ] Gameplay Animations
