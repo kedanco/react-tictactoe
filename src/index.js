@@ -36,14 +36,21 @@ const iconsArray = [
 ];
 
 // TODO
-// Load rankingList from localStorage
-
-let rankingList = [
-	{ username: "kelvin", wins: 10 },
-	{ username: "adam", wins: 6 },
-	{ username: "johnny", wins: 3 }
-];
-localStorage.setItem("ranking", JSON.stringify(rankingList));
+let rankingList = [];
+if (localStorage.ranking !== undefined || localStorage.ranking === []) {
+	rankingList = JSON.parse(localStorage.ranking);
+} else {
+	rankingList = [
+		{ username: "Player1", wins: 0 },
+		{ username: "Player2", wins: 0 }
+	];
+}
+// let rankingList = [
+// 	{ username: "kelvin", wins: 10 },
+// 	{ username: "adam", wins: 6 },
+// 	{ username: "johnny", wins: 3 }
+// ];
+// localStorage.setItem("ranking", JSON.stringify(rankingList));
 
 const ctx = canvasConfetti.getContext("2d");
 const confNum = Math.floor(w / 5);
@@ -125,7 +132,7 @@ class Game extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState.isWin !== this.state.isWin) {
+		if (prevState.isWin !== this.state.isWin && this.state.isWin === true) {
 			if (confs.length === 0) {
 				confs = new Array(confNum).fill().map(_ => new Confetti());
 			}
@@ -173,10 +180,30 @@ class Game extends React.Component {
 
 	addScore() {
 		// TODO
-		// Get winning user
-		// Check if exist, +1 to wins
-		// Else add new user
+		console.log("adding score for " + winner);
+		let usernames = [];
+		let winUser =
+			winner === this.state.player1 ? this.state.user1 : this.state.user2;
+		rankingList.forEach(user => {
+			usernames.push(user.username);
+		});
+
+		let index = usernames.indexOf(winUser);
+		console.log(index, usernames[index], winUser);
+		if (index >= 0) {
+			rankingList[index].wins += 1;
+		} else {
+			rankingList.push({ username: winUser, wins: 1 });
+		}
+
 		// Re-order rankingList, re-render
+		rankingList.sort(function(a, b) {
+			return b.wins - a.wins;
+		});
+
+		console.log(rankingList);
+
+		localStorage.setItem("ranking", JSON.stringify(rankingList));
 	}
 
 	audioPlayer = function(props) {
