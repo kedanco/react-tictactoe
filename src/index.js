@@ -37,7 +37,7 @@ const iconsArray = [
 
 // TODO
 let rankingList = [];
-if (localStorage.ranking !== undefined || localStorage.ranking === []) {
+if (localStorage.ranking.length !== 0) {
 	rankingList = JSON.parse(localStorage.ranking);
 } else {
 	rankingList = [
@@ -45,12 +45,6 @@ if (localStorage.ranking !== undefined || localStorage.ranking === []) {
 		{ username: "Player2", wins: 0 }
 	];
 }
-// let rankingList = [
-// 	{ username: "kelvin", wins: 10 },
-// 	{ username: "adam", wins: 6 },
-// 	{ username: "johnny", wins: 3 }
-// ];
-// localStorage.setItem("ranking", JSON.stringify(rankingList));
 
 const ctx = canvasConfetti.getContext("2d");
 const confNum = Math.floor(w / 5);
@@ -114,6 +108,8 @@ class Game extends React.Component {
 			isDraw: false,
 			gameStart: false,
 			iconClash: false,
+			nameEdit: 0,
+			resetRank: false,
 			status: "Next player: X",
 			player1: "X",
 			player2: "O",
@@ -129,6 +125,11 @@ class Game extends React.Component {
 	componentDidMount() {
 		this.iconLabel = document.getElementsByClassName("icons-text")[0];
 		this.iconWarning = document.getElementsByClassName("icons-warning")[0];
+		this.namesWarning = document.getElementsByClassName("names-warning")[0];
+		this.player_input = document.getElementsByClassName("player-input");
+		// Array.from(this.player_input).forEach((input, index) => {
+		// 	input.addEventListener("submit", this.updateName(), false);
+		// });
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -175,6 +176,45 @@ class Game extends React.Component {
 				"This icon has been chosen by another player.";
 		} else {
 			this.iconWarning.innerHTML = "";
+		}
+
+		// display username edit input
+		if (this.state.nameEdit > 0) {
+			this.player_input[this.state.nameEdit - 1].style.display === ""
+				? (this.player_input[this.state.nameEdit - 1].style.display = "inline")
+				: (this.player_input[this.state.nameEdit - 1].style.display = "");
+			this.setState({ nameEdit: 0 });
+		}
+
+		if (this.state.user1 === this.state.user2) {
+			this.namesWarning.innerHTML = "Both players cannot have the same name";
+			console.log("hi");
+			this.setState({ user1: prevState.user1, user2: prevState.user2 });
+		} else {
+			if (prevState.user1 !== this.state.user1) {
+				this.player_input[0].style.display = "";
+			}
+			if (prevState.user2 !== this.state.user2) {
+				this.player_input[1].style.display = "";
+			}
+		}
+
+		if (
+			prevState.user1 !== this.state.user2 &&
+			prevState.user2 !== this.state.user1 &&
+			this.state.user1 !== this.state.user2
+		) {
+			this.namesWarning.innerHTML = "";
+		}
+
+		if (this.state.resetRank) {
+			this.deleteRanking(
+				window.confirm(
+					"Are you sure you wish to reset all ranking records? This action cannot be reversed."
+				)
+			);
+
+			this.setState({ resetRank: false });
 		}
 	}
 
@@ -383,33 +423,82 @@ class Game extends React.Component {
 					<p className="icons-text">Select your icons before game start</p>
 					<div className="player1-icons">
 						<label>
-							<span>{this.state.user1}: </span>
-							<select
-								id="select1"
-								value={this.state.player1}
-								onChange={e => {
-									this.handleFormChange(1, e);
-								}}
-							>
-								{iconsArray.map(listOptions)}
-							</select>
+							<span>
+								<span
+									id="edit1"
+									alt="change name"
+									onClick={e => this.setState({ nameEdit: 1 })}
+								>
+									✎ {""}
+								</span>
+								{this.state.user1}:{" "}
+							</span>
 						</label>
+						<select
+							id="select1"
+							value={this.state.player1}
+							onChange={e => {
+								this.handleFormChange(1, e);
+							}}
+						>
+							{iconsArray.map(listOptions)}
+						</select>
+					</div>
+					<div className="player-input">
+						<input id="player1-name" type="text" />
+						<button
+							onClick={e => {
+								e.preventDefault();
+								this.setState({
+									user1: document.getElementById("player1-name").value
+								});
+								document.getElementById("player1-name").value = "";
+							}}
+						>
+							<span>✓</span>
+						</button>
 					</div>
 					<div className="player2-icons">
 						<label>
-							<span>{this.state.user2}: </span>
-							<select
-								id="select2"
-								value={this.state.player2}
-								onChange={e => {
-									this.handleFormChange(2, e);
-								}}
-							>
-								{iconsArray.map(listOptions)}
-							</select>
+							<span>
+								<span
+									id="edit2"
+									alt="change name"
+									onClick={e => {
+										this.setState({ nameEdit: 2 });
+									}}
+								>
+									✎ {""}
+								</span>
+								{this.state.user2}:{" "}
+							</span>
 						</label>
+						<select
+							id="select2"
+							value={this.state.player2}
+							onChange={e => {
+								this.handleFormChange(2, e);
+							}}
+						>
+							{iconsArray.map(listOptions)}
+						</select>
+					</div>
+					<div className="player-input">
+						<input id="player2-name" type="text" />
+						<button
+							onClick={e => {
+								e.preventDefault();
+								this.setState({
+									user2: document.getElementById("player2-name").value
+								});
+								document.getElementById("player1-name").value = "";
+							}}
+						>
+							<span>✓</span>
+						</button>
 					</div>
 					<p className="icons-warning" />
+					<p className="names-warning" />
 				</div>
 			</form>
 		);
@@ -437,8 +526,29 @@ class Game extends React.Component {
 				<div className="l-username">Username</div>
 				<div className="l-wins">Wins</div>
 				<div className="l-board">{displayRanking()}</div>
+				<div className="l-delete">
+					<button
+						id="delete-ranking"
+						onClick={e => {
+							this.setState({ resetRank: true });
+						}}
+					>
+						Reset Ranking
+					</button>
+				</div>
 			</div>
 		);
+	}
+
+	deleteRanking(ans) {
+		if (ans) {
+			rankingList = [
+				{ username: "Player1", wins: 0 },
+				{ username: "Player2", wins: 0 }
+			];
+			localStorage.setItem("ranking", JSON.stringify(rankingList));
+			alert("Ranking has been reset.");
+		}
 	}
 
 	pausePlayMusic() {
