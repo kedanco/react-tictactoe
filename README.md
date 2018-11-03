@@ -22,7 +22,7 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Setup localStorage for Ranking Board
 - [x] Save Player name to Ranking Board
 - [x] Reset localStorage Ranking Board records
-- [ ] Add Default button for player icons
+- [x] Add Default button for player icons
 - [ ] Refactor Code into Components
 - [ ] Gameplay Animations
 
