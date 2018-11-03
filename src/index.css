@@ -95,6 +95,13 @@ select {
 	margin-bottom: 10px;
 }
 
+#resetIcons {
+	font-size: 18px;
+	padding: 6px;
+	margin-top: 15px;
+	width: 200px;
+}
+
 .square {
 	display: grid;
 	background: #fff;
@@ -163,11 +170,6 @@ h2.title {
 	grid-template-columns: 1.2fr 4fr 1fr;
 	border: 1px solid #555;
 }
-
-/* .leaderboard > div,
-.leaderboard > span {
-	border: 1px solid #555;
-} */
 
 .leaderboard * {
 	display: grid;

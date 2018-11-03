@@ -110,6 +110,7 @@ class Game extends React.Component {
 			iconClash: false,
 			nameEdit: 0,
 			resetRank: false,
+			resetIcons: false,
 			status: "Next player: X",
 			player1: "X",
 			player2: "O",
@@ -215,6 +216,10 @@ class Game extends React.Component {
 			);
 
 			this.setState({ resetRank: false });
+		}
+
+		if (this.state.resetIcons) {
+			this.setState({ player1: "X", player2: "O", resetIcons: false });
 		}
 	}
 
@@ -408,6 +413,23 @@ class Game extends React.Component {
 		}
 	}
 
+	defaultIcons() {
+		if (this.state.player1 !== "X" || this.state.player2 !== "O") {
+			return (
+				<div>
+					<button
+						id="resetIcons"
+						onClick={e => this.setState({ resetIcons: true })}
+					>
+						Reset Icons
+					</button>
+				</div>
+			);
+		} else {
+			return "";
+		}
+	}
+
 	renderIcons() {
 		const listOptions = opt => {
 			return (
@@ -420,7 +442,7 @@ class Game extends React.Component {
 		return (
 			<form>
 				<div className="icons">
-					<p className="icons-text">Select your icons before game start</p>
+					<p className="icons-text">Select your icons before game start:</p>
 					<div className="player1-icons">
 						<label>
 							<span>
@@ -499,6 +521,7 @@ class Game extends React.Component {
 					</div>
 					<p className="icons-warning" />
 					<p className="names-warning" />
+					{this.defaultIcons()}
 				</div>
 			</form>
 		);
