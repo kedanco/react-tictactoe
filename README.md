@@ -40,7 +40,11 @@ And start playing at localhost:3000
 ### Credits
 
 Guided React Tutorial: ReactJS Website[https://reactjs.org/tutorial/tutorial.html]
+
 Confetti Background: CodemyUI[https://codemyui.com/confetti-falling-background-using-canvas/]
+
 Music:
+
 Final Fantasy 7 Fanfare[https://www.youtube.com/watch?v=-YCN-a0NsNk]
+
 Mario Party 4 Draw Music[https://www.youtube.com/watch?v=-CSQglagWmY]
