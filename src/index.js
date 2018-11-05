@@ -1,8 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import fanfare from "./ff7-victory.mp3";
-import draw from "./draw.mp3";
+
 import "./index.css";
+import IconsBox from "./components/IconsBox";
+import Credits from "./components/Credits";
+import RestartGame from "./components/RestartGame";
+import Board from "./components/Board";
+import AudioPlayer from "./components/AudioPlayer";
+import StopMusic from "./components/StopMusic";
+import Ranking from "./components/Ranking";
+import Status from "./components/Status";
 
 const canvasConfetti = document.querySelector("#canvas");
 const w = (canvasConfetti.width = window.innerWidth);
@@ -51,47 +58,6 @@ const confNum = Math.floor(w / 5);
 let confs = new Array(confNum).fill().map(_ => new Confetti());
 let restart = false;
 let winner = "";
-
-function Square(props) {
-	return (
-		<button className="square" onClick={props.onClick}>
-			{props.value}
-		</button>
-	);
-}
-
-class Board extends React.Component {
-	renderSquare(i) {
-		return (
-			<Square
-				value={this.props.squares[i]}
-				onClick={() => this.props.onClick(i)}
-				key={i}
-			/>
-		);
-	}
-
-	createBoard() {
-		let board = [];
-		for (let row = 0; row < 3; row++) {
-			let squares = [];
-			for (let sq = 0; sq < 3; sq++) {
-				squares.push(this.renderSquare(3 * row + sq));
-			}
-			board.push(
-				<div className="board-row" key={row}>
-					{squares}
-				</div>
-			);
-		}
-		return board;
-	}
-
-	render() {
-		let board = this.createBoard();
-		return <div>{board}</div>;
-	}
-}
 
 class Game extends React.Component {
 	constructor(props) {
@@ -251,14 +217,6 @@ class Game extends React.Component {
 		localStorage.setItem("ranking", JSON.stringify(rankingList));
 	}
 
-	audioPlayer = function(props) {
-		if (this.state.isWin) {
-			return <audio id="fanfare" src={fanfare} autoPlay loop />;
-		} else if (this.state.isDraw) {
-			return <audio id="fanfare" src={draw} autoPlay />;
-		}
-	};
-
 	handleClick(i) {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
@@ -333,60 +291,6 @@ class Game extends React.Component {
 		});
 	}
 
-	renderStatus() {
-		if (winner === null && this.state.history.length === 10) {
-			let winStatus = "It's a draw!";
-			return <div className="winnerText">{winStatus}</div>;
-		}
-		if (this.state.isWin) {
-			let winStatus = "Winner is: " + winner;
-			return <div className="winnerText">{winStatus}</div>;
-		} else {
-			return <div className="statusText">{this.state.status}</div>;
-		}
-	}
-
-	renderRestart() {
-		if (this.state.isWin || this.state.isDraw) {
-			return (
-				<div className="restart">
-					<button
-						className="restartButton"
-						onClick={() => {
-							this.restartGame();
-							restart = true;
-						}}
-					>
-						<span role="img" aria-label="restart">
-							⟳
-						</span>
-						&nbsp; Restart Game
-					</button>
-				</div>
-			);
-		}
-	}
-
-	renderStopMusic() {
-		if (this.state.isWin || this.state.isDraw) {
-			return (
-				<div className="playPauseMusic">
-					<button
-						id="playPauseButton"
-						className="playPauseButton"
-						onClick={() => this.pausePlayMusic()}
-					>
-						<span role="img" aria-label="sound">
-							{" "}
-							🔊{" "}
-						</span>
-						<span id="playPauseText">Playing</span>
-					</button>
-				</div>
-			);
-		}
-	}
-
 	handleFormChange(player, event) {
 		if (!this.state.gameStart) {
 			console.log(player);
@@ -411,156 +315,6 @@ class Game extends React.Component {
 				}
 			}
 		}
-	}
-
-	defaultIcons() {
-		if (this.state.player1 !== "X" || this.state.player2 !== "O") {
-			return (
-				<div>
-					<button
-						id="resetIcons"
-						onClick={e => this.setState({ resetIcons: true })}
-					>
-						Reset Icons
-					</button>
-				</div>
-			);
-		} else {
-			return "";
-		}
-	}
-
-	renderIcons() {
-		const listOptions = opt => {
-			return (
-				<option key={opt} value={opt}>
-					{opt}
-				</option>
-			);
-		};
-
-		return (
-			<form>
-				<div className="icons">
-					<p className="icons-text">Select your icons before game start:</p>
-					<div className="player1-icons">
-						<label>
-							<span>
-								<span
-									id="edit1"
-									alt="change name"
-									onClick={e => this.setState({ nameEdit: 1 })}
-								>
-									✎ {""}
-								</span>
-								{this.state.user1}:{" "}
-							</span>
-						</label>
-						<select
-							id="select1"
-							value={this.state.player1}
-							onChange={e => {
-								this.handleFormChange(1, e);
-							}}
-						>
-							{iconsArray.map(listOptions)}
-						</select>
-					</div>
-					<div className="player-input">
-						<input id="player1-name" type="text" />
-						<button
-							onClick={e => {
-								e.preventDefault();
-								this.setState({
-									user1: document.getElementById("player1-name").value
-								});
-								document.getElementById("player1-name").value = "";
-							}}
-						>
-							<span>✓</span>
-						</button>
-					</div>
-					<div className="player2-icons">
-						<label>
-							<span>
-								<span
-									id="edit2"
-									alt="change name"
-									onClick={e => {
-										this.setState({ nameEdit: 2 });
-									}}
-								>
-									✎ {""}
-								</span>
-								{this.state.user2}:{" "}
-							</span>
-						</label>
-						<select
-							id="select2"
-							value={this.state.player2}
-							onChange={e => {
-								this.handleFormChange(2, e);
-							}}
-						>
-							{iconsArray.map(listOptions)}
-						</select>
-					</div>
-					<div className="player-input">
-						<input id="player2-name" type="text" />
-						<button
-							onClick={e => {
-								e.preventDefault();
-								this.setState({
-									user2: document.getElementById("player2-name").value
-								});
-								document.getElementById("player1-name").value = "";
-							}}
-						>
-							<span>✓</span>
-						</button>
-					</div>
-					<p className="icons-warning" />
-					<p className="names-warning" />
-					{this.defaultIcons()}
-				</div>
-			</form>
-		);
-	}
-
-	renderRanking() {
-		let rows = [];
-		let displayRanking = function() {
-			rankingList.forEach((user, index) => {
-				rows.push(
-					<div className="l-row" key={index}>
-						<div className="r-number">{index + 1}</div>
-						<div className="r-username">{user.username}</div>
-						<div className="r-wins">{user.wins}</div>
-					</div>
-				);
-			});
-			return rows;
-		};
-
-		return (
-			<div className="leaderboard">
-				<span className="l-title">Leaderboard:</span> <br />
-				<div className="l-number">Ranking</div>
-				<div className="l-username">Username</div>
-				<div className="l-wins">Wins</div>
-				<div className="l-board">{displayRanking()}</div>
-				<div className="l-delete">
-					<button
-						id="delete-ranking"
-						onClick={e => {
-							this.setState({ resetRank: true });
-						}}
-					>
-						Reset Ranking
-					</button>
-				</div>
-			</div>
-		);
 	}
 
 	deleteRanking(ans) {
@@ -600,7 +354,36 @@ class Game extends React.Component {
 		return (
 			<div className="game">
 				<h2 className="title">Kedanco's TicTacToe!</h2>
-				{this.renderIcons()}
+				<IconsBox
+					iconsArray={iconsArray}
+					player1={this.state.player1}
+					player2={this.state.player2}
+					user1={this.state.user1}
+					user2={this.state.user2}
+					handleFormChangeP1={e => {
+						this.handleFormChange(1, e);
+					}}
+					handleFormChangeP2={e => {
+						this.handleFormChange(2, e);
+					}}
+					onIconReset={e => this.setState({ resetIcons: true })}
+					editP1Icon={e => this.setState({ nameEdit: 1 })}
+					editP2Icon={e => this.setState({ nameEdit: 2 })}
+					updateP1Icon={e => {
+						e.preventDefault();
+						this.setState({
+							user1: document.getElementById("player1-name").value
+						});
+						document.getElementById("player1-name").value = "";
+					}}
+					updateP2Icon={e => {
+						e.preventDefault();
+						this.setState({
+							user2: document.getElementById("player2-name").value
+						});
+						document.getElementById("player2-name").value = "";
+					}}
+				/>
 				<div className="game-board">
 					<Board squares={current.squares} onClick={i => this.handleClick(i)} />
 				</div>
@@ -608,34 +391,39 @@ class Game extends React.Component {
 					<h3>Go To Move:</h3>
 					<ul>{moves}</ul>
 				</div>
-				<div className="leaderboard-container">{this.renderRanking()}</div>
+				<div className="leaderboard-container">
+					<Ranking
+						rankingList={rankingList}
+						resetRank={e => {
+							this.setState({ resetRank: true });
+						}}
+					/>
+				</div>
 				<div className="game-info">
-					{this.renderStatus()}
-					{this.renderStopMusic()}
-					{this.renderRestart()}
+					<Status
+						winner={winner}
+						history={this.state.history}
+						status={this.state.status}
+						isWin={this.state.isWin}
+					/>
+					<StopMusic
+						isWin={this.state.isWin}
+						isDraw={this.state.isDraw}
+						pausePlayMusic={() => this.pausePlayMusic()}
+					/>
+					<RestartGame
+						setRestart={() => {
+							restart = true;
+						}}
+						restartGame={() => this.restartGame()}
+						isWin={this.state.isWin}
+						isDraw={this.state.isDraw}
+					/>
 				</div>
 				<div className="credits">
-					<p>
-						Music Credits:&nbsp;
-						<a href="https://www.youtube.com/watch?v=-YCN-a0NsNk">
-							Final Fantasy 7 Fanfare
-						</a>
-						<br />
-						<a href="https://www.youtube.com/watch?v=-CSQglagWmY">
-							Mario Party 4 Draw Music
-						</a>
-					</p>
-					<p>
-						Confetti Background:&nbsp;
-						<a href="https://codemyui.com/confetti-falling-background-using-canvas/">
-							CodemyUI
-						</a>
-					</p>
-					<p>
-						<a href="www.kedanco.com">Kedanco</a>
-					</p>
+					<Credits />
+					<AudioPlayer isWin={this.state.isWin} isDraw={this.state.isDraw} />
 				</div>
-				{this.audioPlayer()}
 			</div>
 		);
 	}
@@ -674,6 +462,8 @@ class Game extends React.Component {
 		});
 	}
 }
+// ========================================
+// Confetti Code
 // ========================================
 
 function confLoop() {

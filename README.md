@@ -23,8 +23,7 @@ Started from reactjs.org tutorial page, continuing this game with some additiona
 - [x] Save Player name to Ranking Board
 - [x] Reset localStorage Ranking Board records
 - [x] Add Default button for player icons
-- [ ] Refactor Code into Components
-- [ ] Gameplay Animations
+- [x] Refactor Code into Components
 
 ### Instructions
 
@@ -37,3 +36,11 @@ Start project with
 `npm start`
 
 And start playing at localhost:3000
+
+### Credits
+
+Guided React Tutorial: ReactJS Website[https://reactjs.org/tutorial/tutorial.html]
+Confetti Background: CodemyUI[https://codemyui.com/confetti-falling-background-using-canvas/]
+Music:
+Final Fantasy 7 Fanfare[https://www.youtube.com/watch?v=-YCN-a0NsNk]
+Mario Party 4 Draw Music[https://www.youtube.com/watch?v=-CSQglagWmY]
